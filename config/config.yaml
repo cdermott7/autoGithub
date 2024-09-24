@@ -1,0 +1,38 @@
+github:
+  repo_prefix: autogithub_
+  username: cdermott7
+notifier:
+  recipient_email: cdermott@uwaterloo.ca
+  sender_email: dermottcole@gmail.com
+  smtp_port: 587
+  smtp_server: smtp.gmail.com
+openai:
+  max_tokens: 2000
+  model: gpt-4
+  temperature: 0.7
+project_generator:
+  custom_prompts:
+    file_content: 'Write {language} code for {filename} in a {theme} project described
+      as: {project_description} with {custom_prompt}'
+    project_description: Describe a {language} project named {project_name} for {theme}
+      with {custom_prompt}
+    project_name: Generate a name for a {theme} project with {custom_prompt}
+  languages:
+  - python
+  - javascript
+  - rust
+  - java
+  - go
+  max_files_per_project: 5
+  max_lines_per_file: 200
+  themes:
+  - web_development
+  - data_science
+  - game_development
+  - machine_learning
+  - iot
+  - blockchain
+  - cybersecurity
+scheduler:
+  creation_time: 02:00
+  timezone: UTC

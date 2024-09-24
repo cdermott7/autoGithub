@@ -1,0 +1,116 @@
+    <!-- src/web_interface/templates/index.html -->
+
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>AutoGitHub Monitor</title>
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <style>
+            body { font-family: Arial, sans-serif; line-height: 1.6; padding: 20px; }
+            pre { background: #f4f4f4; border: 1px solid #ddd; border-radius: 5px; padding: 10px; }
+            .log-entry { margin-bottom: 5px; }
+            .dashboard-item { margin-bottom: 20px; }
+            .chart-container { width: 400px; height: 300px; }
+        </style>
+    </head>
+    <body>
+        <div id="app">
+            <h1>AutoGitHub Monitor</h1>
+            
+            <h2>Dashboard</h2>
+            <div class="dashboard-item">
+                <h3>Total Projects: {{ dashboard.total_projects }}</h3>
+            </div>
+            <div class="dashboard-item">
+                <h3>Language Distribution</h3>
+                <img :src="'/charts/language'" alt="Language Distribution Chart" class="chart-container">
+            </div>
+            <div class="dashboard-item">
+                <h3>Theme Distribution</h3>
+                <img :src="'/charts/theme'" alt="Theme Distribution Chart" class="chart-container">
+            </div>
+            <div class="dashboard-item">
+                <h3>Projects per Day</h3>
+                <img :src="'/charts/projects_per_day'" alt="Projects per Day Chart" class="chart-container">
+            </div>
+            <div class="dashboard-item">
+                <h3>Recent Projects</h3>
+                <ul>
+                    <li v-for="project in dashboard.recent_projects" :key="project.name">
+                        {{ project.name }} ({{ project.language }}, {{ project.theme }})
+                    </li>
+                </ul>
+            </div>
+            
+            <h2>Configuration</h2>
+            <pre>{{ config }}</pre>
+            
+            <h2>Logs</h2>
+            <div v-for="(entries, filename) in logs" :key="filename">
+                <h3>{{ filename }}</h3>
+                <div v-for="entry in entries" :key="entry" class="log-entry">
+                    {{ entry }}
+                </div>
+            </div>
+        </div>
+        <script>
+            new Vue({
+                el: '#app',
+                data: {
+                    config: '',
+                    logs: {},
+                    dashboard: {
+                        total_projects: 0,
+                        language_distribution: {},
+                        theme_distribution: {},
+                        projects_per_day: {},
+                        recent_projects: []
+                    }
+                },
+                mounted() {
+                    this.fetchConfig();
+                    this.fetchLogs();
+                    this.fetchDashboard();
+                    // Refresh data every 30 seconds
+                    setInterval(() => {
+                        this.fetchLogs();
+                        this.fetchDashboard();
+                    }, 30000);
+                },
+                methods: {
+                    fetchConfig() {
+                        axios.get('/config')
+                            .then(response => {
+                                this.config = JSON.stringify(response.data, null, 2);
+                            })
+                            .catch(error => {
+                                console.error('Error fetching config:', error);
+                            });
+                    },
+                    fetchLogs() {
+                        axios.get('/logs')
+                            .then(response => {
+                                this.logs = response.data;
+                            })
+                            .catch(error => {
+                                console.error('Error fetching logs:', error);
+                            });
+                    },
+                    fetchDashboard() {
+                        axios.get('/dashboard')
+                            .then(response => {
+                                this.dashboard = response.data;
+                            })
+                            .catch(error => {
+                                console.error('Error fetching dashboard data:', error);
+                            });
+                    }
+                }
+            });
+        </script>
+    </body>
+    </html>
