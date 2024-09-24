@@ -66,7 +66,7 @@ python -m src.cli.cli generate-api-key
 
 ### Web Interface
 
-Access the web interface at `https://localhost:5000`
+Access the web interface at `https://localhost:5002`
 
 ### API
 
